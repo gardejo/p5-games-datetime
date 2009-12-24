@@ -1,0 +1,243 @@
+=pod
+
+=encoding utf8
+
+=head1 名称
+
+MooseX::Types::Encode - Encodeに関連するMooseクラスのための型制約および型変換
+
+=head1 概要
+
+    {
+        package Foo;
+
+        use utf8;
+
+        use Moose;
+        use MooseX::Types::Encode qw(Encode);
+
+        use namespace::clean -except => [qw(meta)];
+
+        has 'external_string' => (
+            is          => 'rw',
+            isa         => 'Str',
+            lazy_build  => 1,
+            trigger     => sub {
+                $_[0]->clear_internal_string;
+            },
+        );
+
+        has 'internal_string' => (
+            is          => 'rw',
+            isa         => 'Str',
+            lazy_build  => 1,
+            trigger     => sub {
+                $_[0]->clear_external_string;
+            },
+        );
+
+        has 'encoding' => (
+            is          => 'rw',
+            isa         => Encode,
+            coerce      => 1,
+            default     => 'utf8',
+        );
+
+        around BUILDARGS => sub {
+            my $next  = shift;
+            my $class = shift;
+
+            my $init_arg = $class->$next(@_);
+
+            confess 'Could not specifiy both (external/internal) strings '
+                  . 'for initialization arguments'
+                if exists $init_arg->{external_string}
+                && exists $init_arg->{internal_string};
+
+            return $init_arg;
+        };
+
+        sub _build_external_string {
+            return $_[0]->encoding->encode( $_[0]->internal_string );
+        }
+
+        sub _build_internal_string {
+            return $_[0]->encoding->decode( $_[0]->external_string );
+        }
+
+        __PACKAGE__->meta->make_immutable;
+    }
+    {
+        package main;
+
+        use utf8;
+
+        my $foo = Foo->new(
+            external_string => "\x{94}\x{92}",  # 日本語: '白' (英語: 'white')
+            encoding        => 'cp932',
+        );
+
+        $foo->internal_string(
+              $foo->internal_string
+            . "\x{99F1}\x{99DD}"                # 日本語: '駱駝' (英語: 'camel')
+        );
+        print $foo->external_string;            # '白駱駝' ('white camel')
+    }
+
+=head1 解説
+
+このモジュールはL<Encode|Encode>に関係する
+L<Moose::Util::TypeConstraints|Moose::Util::TypeConstraints>型制約を、
+型変換と共に提供します。
+
+=head1 型制約と型変換
+
+=head2 C<< Encode >>
+
+C<Str>のサブタイプであり、値がL<Encode|Encode>のエンコーディングで実装されている必要があります。
+
+例えば、初期化引数としてC<cp932>, C<euc-jp>, C<7bit-jis>などを受け付けます。
+
+C<coerce>オプションをオンにすると、C<Str>はオブジェクトに変換されます。
+
+=head1 エクスポート
+
+デフォルトでは何もエクスポートされません。
+普通は明示的にC<Encode>型のエクスポートを要求することを望むでしょう。
+
+=head1 関連情報
+
+=over 4 *
+
+L<Encode>
+
+=back
+
+=head1 今後の予定
+
+=over 4
+
+=item *
+
+さらなるテスト
+
+=back
+
+=head1 非互換性
+
+互換性のない変更点はありません。
+
+=head1 バグと制約事項
+
+バグは報告されていません。
+
+=head2 提案やバグ報告の方法
+
+何かバグを発見されたら、機能のご要望がありましたら、または改善のためのご意見がありましたら、メール(C<bug-moosex-types-encode at rt.cpan.org>宛)で報告してください。
+または、Webインターフェース(L<http://rt.cpan.org/Public/Bug/Report.html?Queue=MooseX-Types-Encode>)を使って報告してください。
+これによって、その報告内容が開発者へ通知されます。
+さらに、バグや要望の対応状況について、報告者が通知を自動的に受けることも出来ます。
+
+バグを報告いただく際には、もし可能であれば、バグを再現するための出来るだけ少量のサンプルコードを添えてください。
+提案やパッチは勿論歓迎します。
+
+=head1 サポート
+
+このモジュールの文書はC<perldoc>コマンドで閲覧出来ます。
+
+    perldoc MooseX::Types::Encode
+
+日本語版はL<Pod::PerldocJp|Pod::PerldocJp>を使ったC<perldocjp>コマンドで閲覧出来ます。
+
+    perldocjp MooseX::Types::Encode.ja
+
+また、以下の場所も参照してください:
+
+=over 4
+
+=item RT: CPAN's request tracker
+
+L<http://rt.cpan.org/Public/Dist/Display.html?Name=MooseX-Types-Encode>
+
+=item AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/MooseX-Types-Encode>
+
+=item Search CPAN
+
+L<http://search.cpan.org/dist/MooseX-Types-Encode>
+
+=item CPAN Ratings
+
+L<http://cpanratings.perl.org/dist/MooseX-Types-Encode>
+
+=back
+
+=head1 バージョン管理
+
+このモジュールはI<git>を使って保守されています。
+
+最新版はL<git://github.com/gardejo/p5-moosex-types-encode.git>にあります。
+
+=head1 コード網羅率
+
+テストのコード網羅率(コードカバレッジ)を検査するために、L<Devel::Cover|Devel::Cover>を使っています。
+このディストリビューションのテストスートに関するC<Devel::Cover>による調査結果の概要を以下に示します。
+
+ ---------------------------- ------ ------ ------ ------ ------ ------ ------
+ File                           stmt   bran   cond    sub    pod   time  total
+ ---------------------------- ------ ------ ------ ------ ------ ------ ------
+ ---------------------------- ------ ------ ------ ------ ------ ------ ------
+
+=head1 著者
+
+=over 4
+
+=item 守屋 雅樹, MORIYA Masaki (a.k.a. Gardejo)
+
+C<< <moriya at cpan dot org> >>,
+L<http://ttt.ermitejo.com/>
+
+=back
+
+=head1 著作権と使用許諾条件
+
+Copyright (c) 2009 by MORIYA Masaki (a.k.a. Gardejo),
+L<http://ttt.ermitejo.com/>.
+
+This module is free software;
+you can redistribute it and/or modify it under the same terms as Perl itself.
+See L<perlgpl|perlgpl> and L<perlartistic|perlartistic>.
+
+The full text of the license can be found in the F<LICENSE> file
+included with this distribution.
+
+このモジュールはフリーソフトウェアです。
+あなたはこれをPerlと同じように自由に再配布・改変することが出来ます。
+詳しくはL<perlgpl|perlgpl>およびL<perlartistic|perlartistic>を参照してください。
+
+使用許諾条件の全文はこのディストリビューションに同梱されているF<LICENSE>ファイルにあります。
+
+=head1 訳者
+
+=over 4
+
+=item 守屋 雅樹, MORIYA Masaki (a.k.a. Gardejo)
+
+C<< <moriya at cpan dot org> >>,
+L<http://ttt.ermitejo.com/>
+
+=back
+
+=head1 訳注
+
+=over 4
+
+=item 音引き
+
+この文書の訳出にあたっては、英単語のカタカナ表記について、語尾の音引き(katakana prolonged sound mark)を省かずに表記しています(JIS Z 8301で規定されているような省略はしていません)。
+例えば、「constructor」を「コンストラクB<タ>」ではなく「コンストラクB<ター>」と表記しています。
+
+=back
+
+=cut

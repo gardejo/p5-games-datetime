@@ -1,0 +1,6 @@
+implementation: FF11
+game:           Final Fantasy XI
+header:         Final Fantasy XI時計
+game_world:     ヴァナ・ディール時間
+real_world:     地球時間
+footer:         停止するには[Ctrl]+[C]キーを押下してください。

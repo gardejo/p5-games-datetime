@@ -1,0 +1,101 @@
+This file documents the revision history for Perl distribution
+`Games-DateTime`.
+
+
+VERSION HISTORY
+===============
+
+0.00 : Released on 2009-12-XX (JST)
+-----------------------------------
+
+Initial release.
+(not for CPAN)
+
+### Features
+
+#### `Games::DateTime`
+
+-   Implemented `Games::DateTime`,
+    which treats date and time on calendars of any games
+    as an object oriented interfaces.
+
+#### Implementations and aliases
+
+-   Implemented `Games::DateTime::Implementation::EQ1` and
+    `Games::DateTime::Alias::EQ1`,
+    which treat the calendar on Norrath: the world of EverQuest.
+
+-   Implemented `Games::DateTime::Implementation::EQ2` and
+    `Games::DateTime::Alias::EQ2`,
+    which treat the calendar on Norrath: the world of EverQuest II.
+
+-   Implemented `Games::DateTime::Implementation::FF11` and
+    `Games::DateTime::Alias::FF11`,
+    which treat the calendar called Crystal Era (C.E.)
+    on Vana'diel: the world of Final Fantasy XI.
+
+-   Implemented `Games::DateTime::Implementation::FF14` and
+    `Games::DateTime::Alias::FF14`,
+    which are a place holder.
+
+-   Implemented `Games::DateTime::Implementation::WoW` and
+    `Games::DateTime::Alias::WoW`,
+    which are a place holder.
+
+### Tests
+
+-   Prepared tests for `Games::DateTime`.
+
+### Documents
+
+-   Prepared minimal documents.
+
+
+META INFORMATION
+================
+
+Version notation
+----------------
+
+    V.vvrr_dd : Released on YYYY-MM-DD (Time Zone)
+
+### V  : Major version number
+
+-   Added ambitious features
+-   Changed in APIs
+    (older API will be keeped to compatibility for a some period)
+-   ...
+
+### vv : Minor version number (in major version)
+
+-   Added several features
+-   Improved any features
+-   Fixed bugs
+-   ...
+
+### rr : Revision number (in minor version, on demand)
+
+You would not need to update the distribution.
+
+-   Improved tests
+-   Updated documents
+-   ...
+
+### dd : Developer release number (in revision number, on demand)
+
+This is unstable version.
+Unless you are a developer, You will not be recommended to upgrade
+the distribution.
+
+-   Added experimental features
+-   Fixed bugs provisionally
+-   ...
+
+
+Document format
+---------------
+
+This `Changes` file was formatted in Markdown.
+
+    $ perl -MText::Markdown -MFile::Slurp -e \\
+      'print (Text::Markdown->new->markdown(scalar read_file(q{Changes})));'

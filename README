@@ -1,0 +1,82 @@
+NAME
+----
+
+Games-DateTime
+
+INSTALLATION
+------------
+
+To install this distribution,
+
+first, to make Makefile, build this distribution and run tests
+by the following command:
+
+    cpan -t .
+
+next, to deploy this distribution
+by the following command:
+
+    cpan -i .
+
+DEPENDENCIES
+------------
+
+See "Makefile.PL".
+
+DESCRIPTION
+-----------
+
+This module treats date and time on calendars of any games
+as an object oriented interfaces.
+
+See further document of this distribution by the following commands:
+
+    perldoc Games::DateTime
+
+EXAMPLES
+--------
+
+Run the following command at root directory of this distribution:
+
+    $ perl examples/clock.pl -i FF11
+
+    or
+
+    $ perl examples/clock.pl -i FF11 -h "" -f ""
+
+    or
+
+    $ perl examples/clock.pl -i FF11 -g "Final Fantasy XI" -w Vana'diel -r Earth
+
+    or
+
+    $ perl examples/clock.pl -i FF14 -g "Final Fantasy XIV" -w Eorzea -r Earth
+
+    or
+
+    $ perl examples/clock.pl --configfile examples/clock/ff11.yml
+
+    or
+
+    ...
+
+AUTHOR
+------
+
+MORIYA Masaki (a.k.a. Gardejo)
+
+    <moriya at cpan dot org>,
+    http://ttt.ermitejo.com/
+
+COPYRIGHT AND LICENSE
+---------------------
+
+Copyright (c) 2009 by MORIYA Masaki (a.k.a. Gardejo),
+http://ttt.ermitejo.com/
+
+This distribution is free software;
+you can redistribute it and/or modify it under the same terms as Perl itself.
+See perlgpl and perlartistic.
+
+The full text of the license can be found in the "LICENSE" file
+included with this distribution.
