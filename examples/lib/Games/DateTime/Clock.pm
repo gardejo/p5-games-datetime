@@ -363,12 +363,12 @@ sub _center {
 sub _print_frame {
     my $self = shift;
 
-    if ($OSNAME eq 'MSWin32') {
-        load 'Win32::Console::ANSI';
-        print "\n" x $self->height_of('max');
-        savepos();
-        $self->_offset(- $self->height_of('max'), 0);
-    }
+    load 'Win32::Console::ANSI'
+        if $OSNAME eq 'MSWin32';
+
+    print "\n" x $self->height_of('max');
+    savepos();
+    $self->_offset(- $self->height_of('max'), 0);
     savepos();
 
     # 2 is length('+' x 2) or length('|' x 2);
