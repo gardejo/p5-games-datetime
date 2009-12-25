@@ -17,6 +17,7 @@ use utf8;
 # general dependency(-ies)
 # ****************************************************************
 
+use Encode qw(decode_utf8);
 use English;
 use List::Util qw(max);
 use Module::Load;
@@ -104,6 +105,7 @@ has 'game_world' => (
     )],
     is          => 'rw',
     isa         => 'Str',
+    predicate   => 'has_game_world',
     default     => 'Game',
     trigger     => sub {
         $_[0]->clear_width;
@@ -125,6 +127,7 @@ has 'real_world' => (
     )],
     is          => 'rw',
     isa         => 'Str',
+    predicate   => 'has_real_world',
     default     => 'Real',
     trigger     => sub {
         $_[0]->clear_width;
@@ -174,7 +177,7 @@ has 'footer' => (
     )],
     is          => 'rw',
     isa         => 'Str',
-    default     => q(To stop the clock, press [Ctrl]+[C] keys.),
+    lazy_build  => 1,
     trigger     => sub {
         $_[0]->clear_width;
         $_[0]->clear_height;
@@ -258,6 +261,29 @@ has 'height' => (
 
 
 # ****************************************************************
+# hook(s) on construction
+# ****************************************************************
+
+sub BUILD {
+    my $self = shift;
+
+    ATTRIBUTE:
+    foreach my $attribute (qw(
+        game
+        game_world  real_world
+        header      footer
+    )) {
+        my $predicator = 'has_' . $attribute;
+        next ATTRIBUTE
+            unless $self->$predicator;
+        $self->$attribute( decode_utf8( $self->$attribute ) );
+    }
+
+    return;
+}
+
+
+# ****************************************************************
 # builder(s)
 # ****************************************************************
 
@@ -274,6 +300,10 @@ sub _build_header {
         '** %s Clock in operation **',
             $self->game,
     );
+}
+
+sub _build_footer {
+    return q(To stop the clock, press [Ctrl]+[C] keys.);
 }
 
 sub _build_encoding {
