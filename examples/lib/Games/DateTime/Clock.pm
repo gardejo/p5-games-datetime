@@ -346,9 +346,9 @@ sub _build_width {
         @{ $datetime->locale->day_stand_alone_abbreviated },
     );
 
-    my $day_name_format = 'D' x $width{max_day_abbr};
-    my $format = '| %s = YYYY/MM/DD(' . $day_name_format . ') HH:MM:SS |';
-
+    my $format = '| %s = YYYY/MM/DD('
+               . 'D' x $width{max_day_abbr}
+               . ') HH:MM:SS |';
     $width{max} = max map {
         $width{$_->[0]} = $self->_visual_length_of($_->[1]);
         $width{$_->[0]};
@@ -423,6 +423,14 @@ sub _center {
     return q{ } x $left_padding . $string . q{ } x $right_padding;
 }
 
+sub _left {
+    my ($self, $string, $length) = @_;
+
+    my $right_padding = $length - $self->_visual_length_of($string);
+
+    return $string . q{ } x $right_padding;
+}
+
 sub _print_frame {
     my $self = shift;
 
@@ -479,11 +487,12 @@ sub _print_frame {
 sub _print_datetime {
     my $self = shift;
 
-    my $format = '%-'
-               . $self->width_of('max_world')
-               . 's = %s(%-'
-               . $self->width_of('max_day_abbr')
-               . 's) %s';
+    my $format = '%s = %s(%s) %s';
+    # my $format = '%-'
+    #            . $self->width_of('max_world')
+    #            . 's = %s(%-'
+    #            . $self->width_of('max_day_abbr')
+    #            . 's) %s';
 
     my $visual_edge_length = $self->_visual_length_of('| ' . ' |');
 
@@ -494,9 +503,19 @@ sub _print_datetime {
         $self->_center(
             sprintf (
                 $format,
-                    $self->encode( $self->game_world ),
+                    $self->encode(
+                        $self->_left(
+                            $self->game_world,
+                            $self->width_of('max_world'),
+                        )
+                    ),
                     $self->datetime->ymd('/'),
-                    $self->encode( $self->datetime->day_abbr ),
+                    $self->encode(
+                        $self->_left(
+                            $self->datetime->day_abbr,
+                            $self->width_of('max_day_abbr'),
+                        )
+                    ),
                     $self->datetime->hms(':'),
             ), $visual_edge_length
         ), 'bold green on blue'
@@ -507,9 +526,19 @@ sub _print_datetime {
         $self->_center(
             sprintf (
                 $format,
-                    $self->encode( $self->real_world ),
+                    $self->encode(
+                        $self->_left(
+                            $self->real_world,
+                            $self->width_of('max_world'),
+                        )
+                    ),
                     $self->datetime->real_time->ymd('/'),
-                    $self->encode( $self->datetime->real_time->day_abbr ),
+                    $self->encode(
+                        $self->_left(
+                            $self->datetime->real_time->day_abbr,
+                            $self->width_of('max_day_abbr'),
+                        )
+                    ),
                     $self->datetime->real_time->hms(':'),
             ), $visual_edge_length
         ), 'bold cyan on blue'
