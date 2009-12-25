@@ -40,9 +40,15 @@ use inc::Module::Install;
     requires        'DateTime'                      => '0';
     requires        'DateTime::Locale'              => '0';
     requires        'DateTime::TimeZone'            => '0';
+    requires        'Lingua::EN::Inflect::Number'   => '0';
+#   requires        'Memoize'                       => '0';
+        # perl 5.007_003
     requires        'Moose'                         => '0.89_01';
         # for Moose::Meta::Attribute::Native
+    requires        'MooseX::AbstractFactory'       => '0';
+    requires        'MooseX::Clone'                 => '0';
     requires        'MooseX::Types::DateTime'       => '0';
+    requires        'Sub::Name'                     => '0';
     requires        'namespace::clean'              => '0.08';
         # cf. MooseX-Types-DateTime
 
@@ -56,14 +62,17 @@ use inc::Module::Install;
                 # perl 5
         #   recommends( 'List::Util'                    => '0' ),
                 # perl 5.007_003
-            recommends( 'module::Load'                  => '0' ),
+            recommends( 'Module::Load'                  => '0' ),
                 # perl 5.009_004
-            recommends( 'Term::ANSIScreen'              => '0' ),
             recommends( 'MooseX::Getopt'                => '0' ),
             recommends( 'MooseX::SimpleConfig'          => '0' ),
+            recommends( 'MooseX::Types'                 => '0' ),
+            recommends( 'Term::ANSIScreen'              => '0' ),
+            recommends( 'Unicode::EastAsianWidth'       => '0' ),
         ],
         'Example: Clock for MSWin32' => [
             -default => 0,
+            recommends( 'Win32::Console'                => '0' ),
             recommends( 'Win32::Console::ANSI'          => '0' ),
         ],
     );
@@ -132,7 +141,7 @@ Makefile.PL - Makefile builder for Games-DateTime
 
 =head1 SYNOPSIS
 
-    $ cpan -t .
+    % cpan -t .
 
 =head1 AUTHOR
 
