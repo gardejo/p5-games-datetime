@@ -37,8 +37,10 @@ around _build_alias => sub {
     my @aliases = qw(
         eq
         eq1             eqi
+        eq_1            eq_i
         everquest
         everquest1      everquesti
+        everquest_1     everquest_i
         norrath
     );
     @$alias{@aliases} = ('EQ1') x scalar @aliases;
@@ -70,10 +72,10 @@ Games::DateTime::Alias::EQ2 - Aliases of EverQuest
     use Games::DateTime;
 
     Games::DateTime->install_alias(qw(EQ1 EQ2));
-    my $norrath_eq2 = Games::DateTime->create('Norrath');        # EQ2
+    my $norrath_eq2 = Games::DateTime->create('Norrath');       # EQ2
 
     Games::DateTime->install_alias(qw(EQ2 EQ1));
-    my $norrath_eq1 = Games::DateTime->create('Norrath');        # EQ1
+    my $norrath_eq1 = Games::DateTime->create('Norrath');       # EQ1
 
 =head1 DESCRIPTION
 

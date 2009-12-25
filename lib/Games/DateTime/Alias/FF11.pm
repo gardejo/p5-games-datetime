@@ -35,10 +35,13 @@ around _build_alias => sub {
 
     my $alias = $self->$next;
     my @aliases = qw(
-        ff11            ffxi
-        finalfantasy11  finalfantasyxi
-        vanadiel        vana'diel
-        crystal         crystal_era     c.e.
+        ff11                ffxi
+        ff_11               ff_xi
+        finalfantasy11      finalfantasyxi
+        finalfantasy_11     finalfantasy_xi
+        final_fantasy_11    final_fantasy_xi
+        vanadiel            vana'diel
+        crystal             crystal_era         c.e.
     );
     @$alias{@aliases} = ('FF11') x scalar @aliases;
 
@@ -69,7 +72,7 @@ Games::DateTime::Alias::FF11 - Aliases of Final Fantasy XI
     use Games::DateTime;
 
     Games::DateTime->install_alias(qw(FF11));
-    my $vanadiel = Games::DateTime->create(q(Vana'diel));    # FF11
+    my $vanadiel = Games::DateTime->create(q(Vana'diel));   # FF11
 
 =head1 DESCRIPTION
 

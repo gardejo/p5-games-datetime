@@ -35,8 +35,11 @@ around _build_alias => sub {
 
     my $alias = $self->$next;
     my @aliases = qw(
-        ff14            ffxiv
-        finalfantasy14  finalfantasyxiv
+        ff14                ffxiv
+        ff_14               ff_xiv
+        finalfantasy14      finalfantasyxiv
+        finalfantasy_14     finalfantasy_xiv
+        final_fantasy_14    final_fantasy_xiv
         eorzea
         hydelin
     );
@@ -69,8 +72,8 @@ Games::DateTime::Alias::FF14 - Aliases of Final Fantasy XIV
     use Games::DateTime;
 
     Games::DateTime->install_alias(qw(FF14));
-    my $eorzea  = Games::DateTime->create('Eorzea');     # FF14
-    my $hydelin = Games::DateTime->create('Hydelin');    # FF14
+    my $eorzea  = Games::DateTime->create('Eorzea');    # FF14
+    my $hydelin = Games::DateTime->create('Hydelin');   # FF14
 
 =head1 DESCRIPTION
 

@@ -48,6 +48,27 @@ has 'alias' => (
 
 
 # ****************************************************************
+# sugar(s)
+# ****************************************************************
+
+around canonical_name_of => sub {
+    my ($next, $self, $alias) = @_;
+
+    ( my $sugared_alias = lc $alias ) =~ s{\s}{_}g;
+
+    return $self->$next($sugared_alias);
+};
+
+around exists_alias => sub {
+    my ($next, $self, $alias) = @_;
+
+    ( my $sugared_alias = lc $alias ) =~ s{\s}{_}g;
+
+    return $self->$next($sugared_alias);
+};
+
+
+# ****************************************************************
 # builder(s)
 # ****************************************************************
 
