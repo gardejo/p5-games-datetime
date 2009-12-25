@@ -63,7 +63,7 @@ clock.pl - Simple world time clock
 
     or
 
-    $ perl clock.pl --configfile clock/ff11.yml
+    $ perl clock.pl --configfile clock/ff11.en.yml
 
     or
 

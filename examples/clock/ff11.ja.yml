@@ -1,4 +1,5 @@
 implementation: FF11
+locale:         ja
 game:           Final Fantasy XI
 header:         Final Fantasy XI時計
 game_world:     ヴァナ・ディール時間

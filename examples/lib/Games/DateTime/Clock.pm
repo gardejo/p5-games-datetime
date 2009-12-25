@@ -89,7 +89,6 @@ has 'game' => (
     isa         => 'Str',
     lazy_build  => 1,
     trigger     => sub {
-        $_[0]->clear_header;
         $_[0]->clear_width;
     },
     cmd_aliases => [qw(
@@ -142,7 +141,7 @@ has 'interval' => (
     traits      => [qw(
         Getopt
     )],
-    is          => 'ro',
+    is          => 'rw',
     isa         => 'Int',
     default     => 1,
     cmd_aliases => [qw(
@@ -157,7 +156,7 @@ has 'header' => (
     traits      => [qw(
         Getopt
     )],
-    is          => 'ro',
+    is          => 'rw',
     isa         => 'Str',
     lazy_build  => 1,
     trigger     => sub {
@@ -173,7 +172,7 @@ has 'footer' => (
     traits      => [qw(
         Getopt
     )],
-    is          => 'ro',
+    is          => 'rw',
     isa         => 'Str',
     default     => q(To stop the clock, press [Ctrl]+[C] keys.),
     trigger     => sub {
@@ -189,7 +188,7 @@ has 'encoding' => (
     traits      => [qw(
         Getopt
     )],
-    is          => 'ro',
+    is          => 'rw',
     isa         => Encode,
     coerce      => 1,
     lazy_build  => 1,
@@ -205,11 +204,25 @@ MooseX::Getopt::OptionTypeMap->add_option_type_to_map(
     Encode() => '=s'
 );
 
+has 'locale' => (
+    traits      => [qw(
+        Getopt
+    )],
+    is          => 'rw',
+    isa         => 'Str',
+    lazy_build  => 1,
+    cmd_aliases => [qw(
+        l
+        lang
+        language
+    )],
+);
+
 has 'datetime' => (
     traits      => [qw(
         NoGetopt
     )],
-    is          => 'ro',
+    is          => 'rw',
     does        => 'Games::DateTime::Implementation',
     init_arg    => undef,
     lazy_build  => 1,
@@ -273,10 +286,20 @@ sub _build_encoding {
     }
 }
 
+sub _build_locale {
+    my $self = shift;
+
+    return 'en';
+}
+
 sub _build_datetime {
     my $self = shift;
 
-    return Games::DateTime->create($self->implementation);
+    my $locale = $self->locale;
+
+    return Games::DateTime->create($self->implementation, {
+        locale => $locale,
+    });
 }
 
 sub _build_width {
@@ -284,7 +307,17 @@ sub _build_width {
 
     my %width;
 
-    my $format = '| %s = YYYY/MM/DD(DDD) HH:MM:SS |';
+    my $locale   = $self->locale;
+    my $datetime = $self->datetime;
+    $width{max_day_abbr} = max map {
+        $self->_visual_length_of($_);
+    } (
+        @{ $datetime->day_abbrs_of($locale) },
+        @{ $datetime->locale->day_stand_alone_abbreviated },
+    );
+
+    my $day_name_format = 'D' x $width{max_day_abbr};
+    my $format = '| %s = YYYY/MM/DD(' . $day_name_format . ') HH:MM:SS |';
 
     $width{max} = max map {
         $width{$_->[0]} = $self->_visual_length_of($_->[1]);
@@ -346,12 +379,12 @@ sub run {
 # ****************************************************************
 
 sub _center {
-    my ($self, $string, $edge_visual_length) = @_;
+    my ($self, $string, $visual_edge_length) = @_;
 
-    $edge_visual_length ||= 0;
+    $visual_edge_length ||= 0;
 
     my $total_padding = $self->width_of('max')
-                      - $edge_visual_length
+                      - $visual_edge_length
                       - $self->_visual_length_of($string);
     my $left_padding  = int( $total_padding / 2 );
     my $right_padding = $total_padding
@@ -416,9 +449,13 @@ sub _print_frame {
 sub _print_datetime {
     my $self = shift;
 
-    my $format = '%-' . $self->width_of('max_world') . 's'
-               . ' = %s(%s) %s';
-    my $edge_visual_length = $self->_visual_length_of('| ' . ' |');
+    my $format = '%-'
+               . $self->width_of('max_world')
+               . 's = %s(%-'
+               . $self->width_of('max_day_abbr')
+               . 's) %s';
+
+    my $visual_edge_length = $self->_visual_length_of('| ' . ' |');
 
     my $top_of_display = $self->_has_effective_header ? 2 : 1;
 
@@ -431,7 +468,7 @@ sub _print_datetime {
                     $self->datetime->ymd('/'),
                     $self->encode( $self->datetime->day_abbr ),
                     $self->datetime->hms(':'),
-            ), $edge_visual_length
+            ), $visual_edge_length
         ), 'bold green on blue'
     );
 
@@ -444,7 +481,7 @@ sub _print_datetime {
                     $self->datetime->real_time->ymd('/'),
                     $self->encode( $self->datetime->real_time->day_abbr ),
                     $self->datetime->real_time->hms(':'),
-            ), $edge_visual_length
+            ), $visual_edge_length
         ), 'bold cyan on blue'
     );
 
