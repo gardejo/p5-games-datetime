@@ -1,7 +1,7 @@
 NAME
 ----
 
-Games-DateTime
+Games-DateTime (Perl module Games::DateTime)
 
 INSTALLATION
 ------------
@@ -11,54 +11,27 @@ To install this distribution,
 first, to make Makefile, build this distribution and run tests
 by the following command:
 
-    cpan -t .
+    % cpan -t .
 
 next, to deploy this distribution
 by the following command:
 
-    cpan -i .
+    % cpan -i .
 
 DEPENDENCIES
 ------------
 
 See "Makefile.PL".
 
-DESCRIPTION
------------
+DOCUMENTATION
+-------------
 
-This module treats date and time on calendars of any games
-as an object oriented interfaces.
+Games::DateTime documentation is available as in POD.
+So you can do:
 
-See further document of this distribution by the following commands:
+    % perldoc Games::DateTime
 
-    perldoc Games::DateTime
-
-EXAMPLES
---------
-
-Run the following command at root directory of this distribution:
-
-    $ perl examples/clock.pl -i FF11
-
-    or
-
-    $ perl examples/clock.pl -i FF11 -h "" -f ""
-
-    or
-
-    $ perl examples/clock.pl -i FF11 -g "Final Fantasy XI" -w Vana'diel -r Earth
-
-    or
-
-    $ perl examples/clock.pl -i FF14 -g "Final Fantasy XIV" -w Eorzea -r Earth
-
-    or
-
-    $ perl examples/clock.pl --configfile examples/clock/ff11.yml
-
-    or
-
-    ...
+to read the documentation online with your favorite pager.
 
 AUTHOR
 ------
