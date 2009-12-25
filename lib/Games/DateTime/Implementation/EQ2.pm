@@ -76,53 +76,47 @@ sub _build_standard_time_zone {
 }
 
 sub _build_day_abbrs {
-    return {
-        en => [qw(
+    my $day_abbrs = [qw(
             Drk         Brn         Sou         Wnd
             Stl         Brw         Fst
-        )], # ToDo
-        ja => [qw(
-            闇          燃          魂          風
-            鉄          醸          宴
-        )], # ToDo
-        de => [qw(
-            Drk.        Brn.        Sou.        Wnd.
-            Stl.        Brw.        Fst.
-        )], # ToDo
-        fr => [qw(
-            drk.        brn.        sou.        wnd.
-            stl.        brw.        fst.
-        )], # ToDo
+    )];
+
+    return {
+        en => $day_abbrs,
+        ja => $day_abbrs,
+        de => $day_abbrs,
+        fr => $day_abbrs,
     };
 }
 
 sub _build_day_names {
+    my $day_names = [qw(
+        Darkday     Burnday     Soulday     Windday
+        Steelday    Brewday     Feastday
+    )];
+
     return {
-        en => [qw(
-            Darkday     Burnday     Soulday     Windday
-            Steelday    Brewday     Feastday
-        )],
-        ja => [qw(
-            Darkday     Burnday     Soulday     Windday
-            Steelday    Brewday     Feastday
-        )], # ToDo
-        de => [qw(
-            Darkday     Burnday     Soulday     Windday
-            Steelday    Brewday     Feastday
-        )], # ToDo
-        fr => [qw(
-            Darkday     Burnday     Soulday     Windday
-            Steelday    Brewday     Feastday
-        )], # ToDo
+        en => $day_names,
+        ja => $day_names,
+        de => $day_names,
+        fr => $day_names,
     };
 }
 
-# month_names
-# [qw(
-#     Deepice     Grayeven    Stargazing  Weeping
-#     Blossoming  Oceansfull  Scorchedsky Warmstill
-#     Busheldown  Lastleaf    Firstchill  Deadening
-# )];
+sub _build_month_names {
+    my $month_names = [qw(
+        Deepice     Grayeven    Stargazing  Weeping
+        Blossoming  Oceansfull  Scorchedsky Warmstill
+        Busheldown  Lastleaf    Firstchill  Deadening
+    )];
+
+    return {
+        en => $month_names,
+        ja => $month_names,
+        de => $month_names,
+        fr => $month_names,
+    };
+}
 
 
 # ****************************************************************
@@ -140,14 +134,7 @@ with qw(
 # ****************************************************************
 
 __PACKAGE__->define_delayed_type_constraints;
-__PACKAGE__->assign_delayed_type_constraints(
-    year   => 'GameYear',
-    month  => 'GameMonth',
-    day    => 'GameDay',
-    hour   => 'GameHour',
-    minute => 'GameMinute',
-    second => 'GameSecond',
-);
+__PACKAGE__->assign_delayed_type_constraints;
 __PACKAGE__->meta->make_immutable;
 
 
@@ -183,14 +170,6 @@ Games::DateTime::Implementation::EQ2 - Implementation of EverQuest II for Games:
 
 This class provides several constants of EverQuset II
 for L<Games::DateTime|Games::DateTime>.
-
-
-# Burnday, Scorchedsky 9, of the year 3757
-# http://www.lorelibrary.com/?page=book&bid=177&ss=calendar
-
-# http://search.cpan.org/~pjf/Games-EverQuest-LogLineParser-0.09/lib/Games/EverQuest/LogLineParser.pm
-[Mon Oct 13 00:42:36 2003] Game Time: Thursday, April 05, 3176 - 6 PM
-[Mon Oct 13 00:42:36 2003] Earth Time: Thursday, April 05, 2003 19:25:47
 
 =head1 AUTHOR
 

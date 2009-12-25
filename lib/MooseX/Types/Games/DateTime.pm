@@ -124,7 +124,16 @@ sub define_delayed_type_constraints {
 # ****************************************************************
 
 sub assign_delayed_type_constraints {
-    my ($class, %alignment) = @_;
+    my $class = shift;
+
+    my %alignment = (
+        year   => 'GameYear',
+        month  => 'GameMonth',
+        day    => 'GameDay',
+        hour   => 'GameHour',
+        minute => 'GameMinute',
+        second => 'GameSecond',
+    );
 
     $class->meta->make_mutable;
     while (my ($attribute, $part_of_type_name) = each %alignment) {

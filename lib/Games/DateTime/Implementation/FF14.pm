@@ -129,14 +129,7 @@ with qw(
 # ****************************************************************
 
 __PACKAGE__->define_delayed_type_constraints;
-__PACKAGE__->assign_delayed_type_constraints(
-    year   => 'GameYear',
-    month  => 'GameMonth',
-    day    => 'GameDay',
-    hour   => 'GameHour',
-    minute => 'GameMinute',
-    second => 'GameSecond',
-);
+__PACKAGE__->assign_delayed_type_constraints;
 __PACKAGE__->meta->make_immutable;
 
 
