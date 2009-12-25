@@ -17,7 +17,7 @@ use warnings;
 # ****************************************************************
 
 use Moose::Role;
-use MooseX::Types::DateTime qw(Duration TimeZone Locale);
+use MooseX::Types::DateTime qw(TimeZone Locale);
 
 
 # ****************************************************************
@@ -209,8 +209,10 @@ has [qw(standard_time_zone local_time_zone)] => (
 sub _build_real_time {
     my $self = shift;
 
-    return $self->_has_any_date ? $self->_build_real_time_from_epoch
-         :                        $self->_build_real_time_from_now;
+    return (
+        $self->_has_any_date ? $self->_build_real_time_from_epoch
+      :                        $self->_build_real_time_from_now
+    )->set_locale( $self->locale );
 }
 
 sub _build_real_time_from_epoch {
@@ -221,10 +223,10 @@ sub _build_real_time_from_epoch {
     my $duration_on_real
         = int( $duration_on_game / $self->coefficient );
 
-    return $self->origin_on_real
-                ->clone
-                ->add(seconds => $duration_on_real)
-                ->set_time_zone($self->local_time_zone);
+    return $self->origin_on_real->clone
+                                ->set_time_zone('floating') # ignore leap second
+                                ->add(seconds => $duration_on_real)
+                                ->set_time_zone($self->local_time_zone);
 }
 
 sub _build_real_time_from_now {
@@ -241,19 +243,17 @@ sub _build_epoch {
     my $self = shift;
 
     return $self->_has_any_date ? $self->_build_epoch_from_date
-                                : $self->_build_epoch_from_real_time;
+         :                        $self->_build_epoch_from_real_time;
 }
 
 sub _build_epoch_from_real_time {
     my $self = shift;
 
     my $duration_on_real
-        = $self->real_time
-               ->clone
-               ->set_time_zone( $self->standard_time_zone )
-               ->epoch
-        - $self->origin_on_real
-               ->epoch;
+        = $self->real_time->clone
+                          ->set_time_zone( $self->standard_time_zone )
+                          ->epoch
+        - $self->origin_on_real->epoch;
     my $epoch
         = $self->date_to_epoch( $self->origin_on_game ) # epoch seconds
         + $duration_on_real * $self->coefficient;       # duration on game
@@ -464,7 +464,7 @@ sub date_to_epoch {
     return $epoch;
 }
 
-sub date_to_duration {
+sub duration_date_to_epoch {
     my ($self, %date) = @_;
 
     while (my ($plural_figure, $value) = each %date) {
@@ -497,7 +497,7 @@ sub epoch_to_date {
     return %date;
 }
 
-sub duration_to_date {
+sub duration_epoch_to_date {
     my ($self, $epoch) = @_;
 
     my %date = $self->epoch_to_date($epoch);
@@ -533,7 +533,7 @@ sub seconds_in {
 sub add {
     my ($self, %date) = @_;
 
-    $self->epoch( $self->epoch + $self->date_to_duration(%date) );
+    $self->epoch( $self->epoch + $self->duration_date_to_epoch(%date) );
 
     return $self;   # for method chain
 }
@@ -548,8 +548,8 @@ sub add {
 sub _memoize {
     no strict 'refs';   ## no critic
     foreach my $method (qw(
-        duration_to_date    epoch_to_date
-        date_to_duration    date_to_epoch
+        duration_epoch_to_date  epoch_to_date
+        duration_date_to_epoch  date_to_epoch
         seconds_in
     )) {
         *{ $method } = subname __PACKAGE__ . '::' . $method => memoize($method);
