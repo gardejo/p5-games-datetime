@@ -46,7 +46,7 @@ use namespace::clean -except => [qw(meta)];
 # ****************************************************************
 
 our $VERSION = '0.00';
-our $ALIAS   = Games::DateTime::Alias->new;
+our $ALIAS;
 
 
 # ****************************************************************
@@ -69,8 +69,8 @@ around BUILDARGS => sub {
     my $init_arg = $class->$next(@_);
 
     $init_arg->{_implementation}
-        = $class->_alias->canonical_name_of(lc $init_arg->{_implementation})
-            if $class->_alias->exists_alias(lc $init_arg->{_implementation});
+        = $class->_alias->canonical_name_of($init_arg->{_implementation})
+            if $class->_alias->exists_alias($init_arg->{_implementation});
     $init_arg->{_options} = {}
         unless defined $init_arg->{_options};
 
@@ -83,6 +83,10 @@ around BUILDARGS => sub {
 # ****************************************************************
 
 sub _alias {
+    if (! defined $ALIAS) {
+        $ALIAS = Games::DateTime::Alias->new;
+    }
+
     return $ALIAS;
 }
 
@@ -95,16 +99,24 @@ sub install_alias {
     my $class = shift;
 
     if (scalar @_ == 1 && ! blessed $_[0] && ref $_[0] eq 'HASH') {
-        $class->alias->install_alias($_[0]);
+        $class->_alias->install_alias(%{ $_[0] });
     }
     else {
         foreach my $part_of_alias_role_name (@_) {
             apply_all_roles(
-                $class->alias,
+                $class->_alias,
                 __PACKAGE__ . '::Alias::' . $part_of_alias_role_name,
             );
         }
     }
+
+    return;
+}
+
+sub uninstall_alias {
+    my $class = shift;
+
+    undef $ALIAS;
 
     return;
 }
@@ -212,6 +224,10 @@ blah blah blah
 
 blah blah blah
 
+=head3 C<< Games::DateTime->uninstall_alias() >>
+
+blah blah blah
+
 =head2 Utilities of getters
 
 =head3 C<< $datetime->hms($optional_separator) >>
@@ -251,7 +267,7 @@ Run the following command at root directory of this distribution:
 
     or
 
-    $ perl examples/clock.pl --configfile examples/clock/ff11.yml
+    $ perl examples/clock.pl --configfile examples/clock/ff11.en.yml
 
     or
 
@@ -362,7 +378,21 @@ below is the C<Devel::Cover> summary report on this distribution's test suite.
  ---------------------------- ------ ------ ------ ------ ------ ------ ------
  File                           stmt   bran   cond    sub    pod   time  total
  ---------------------------- ------ ------ ------ ------ ------ ------ ------
- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ blib/lib/Games/DateTime.pm    100.0  100.0   83.3  100.0  100.0    0.0   98.2
+ ...b/Games/DateTime/Alias.pm  100.0    n/a    n/a  100.0    n/a    0.0  100.0
+ ...mes/DateTime/Alias/EQ1.pm  100.0    n/a    n/a  100.0    n/a    0.0  100.0
+ ...mes/DateTime/Alias/EQ2.pm  100.0    n/a    n/a  100.0    n/a    0.0  100.0
+ ...es/DateTime/Alias/FF11.pm  100.0    n/a    n/a  100.0    n/a    0.0  100.0
+ ...es/DateTime/Alias/FF14.pm  100.0    n/a    n/a  100.0    n/a    0.0  100.0
+ ...mes/DateTime/Alias/WoW.pm  100.0    n/a    n/a  100.0    n/a    0.0  100.0
+ ...ateTime/Implementation.pm  100.0   95.5   66.7  100.0  100.0  100.0   96.5
+ ...ime/Implementation/EQ1.pm   70.4    n/a    n/a   50.0    n/a    0.0   63.4
+ ...ime/Implementation/EQ2.pm   61.5    n/a    n/a   46.2    n/a    0.0   56.4
+ ...me/Implementation/FF11.pm  100.0    n/a    n/a  100.0    n/a    0.0  100.0
+ ...me/Implementation/FF14.pm   72.7    n/a    n/a   50.0    n/a    0.0   64.7
+ ...ime/Implementation/WoW.pm   76.0    n/a    n/a   53.8    n/a    0.0   68.4
+ ...X/Types/Games/DateTime.pm  100.0  100.0    n/a  100.0  100.0    0.0  100.0
+ Total                          91.8   97.2   71.4   83.1  100.0  100.0   89.2
  ---------------------------- ------ ------ ------ ------ ------ ------ ------
 
 =head1 AUTHOR
