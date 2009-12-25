@@ -452,13 +452,13 @@ sub _print_frame {
         $self->_offset($line, 0);
         if ($line eq 0 && $self->_has_effective_header) {
             print colored (
-                $self->_center( $self->encode( $self->header ) ),
+                $self->encode( $self->_center( $self->header ) ),
                 'bold green on black',
             );
         }
         elsif ($line eq $#lines && $self->_has_effective_footer) {
             print colored (
-                $self->_center( $self->encode( $self->footer ) ),
+                $self->encode( $self->_center( $self->footer ) ),
                 'cyan on black',
             );
         }
